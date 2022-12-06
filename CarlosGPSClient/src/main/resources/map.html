@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geocoding Service</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+      * element that contains the map. */
+      #map {
+      	height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+      	height: 100%;
+      	margin: 0;
+      	padding: 0;
+      }
+      #floating-panel {
+      	position: absolute;
+      	top: 0;
+      	left: 0%;
+      	z-index: 0;
+      	background-color: #fff;
+      	padding: 5px;
+      	border: 1px solid #999;
+      	text-align: center;
+      	font-family: 'Roboto','sans-serif';
+      	line-height: 30px;
+      	padding-left: 10px;
+      }
+  </style>
+</head>
+<body>
+<div id="floating-panel">
+    <input id="origin" type="text">
+    <input id="dest" type="text" >
+	<input id="station1" type="text">
+    <input id="station2" type="text" >
+    <input id="waypoint" type="text">
+    <input id="submit" type="button" value="Find">
+</div>
+<div id="map"></div>
+<script>
+		function initMap() {
+			var options =  {
+					zoom: 6,
+					center: {lat: 46.41889628094236, lng: 2.349204963365441},
+					streetViewControl: false
+				},
+				map = new google.maps.Map(document.getElementById('map'), options),
+				directionsService = new google.maps.DirectionsService,
+				directionsDisplay = new google.maps.DirectionsRenderer({
+					map: map
+				});
+
+				document.getElementById('submit').addEventListener('click', function() {
+					calculateAndDisplayRoute(directionsService, directionsDisplay,map);
+				});
+		}
+
+		function createWaypoint(waypoint){
+			var wayptsArray = waypoint.split(";");
+
+			var wayptsResult = [];
+
+			for(const waypoint of wayptsArray){
+				wayptsResult.push({location:{lat: parseFloat(waypoint.split(",")[0]),lng: parseFloat(waypoint.split(",")[1])},stopover: false});
+			}
+
+			return wayptsResult;
+		}
+
+		function calculateAndDisplayRoute(directionsService, directionsDisplay,map) {
+
+			let origin = document.getElementById("origin").value;
+			let originPoint = new google.maps.LatLng(parseFloat(origin.split(",")[0]), parseFloat(origin.split(",")[1]));
+
+
+			let dest = document.getElementById("dest").value;
+			let destPoint = new google.maps.LatLng(parseFloat(dest.split(",")[0]), parseFloat(dest.split(",")[1]));
+
+			let station1 = document.getElementById("station1").value;
+			let station1Point = new google.maps.LatLng(parseFloat(station1.split(",")[0]), parseFloat(station1.split(",")[1]));
+
+			let station2 = document.getElementById("station2").value;
+			let station2Point = new google.maps.LatLng(parseFloat(station2.split(",")[0]), parseFloat(station2.split(",")[1]));
+
+			let waypoints = document.getElementById("waypoint").value;
+
+			let wayptsArray = createWaypoint(waypoints);
+			
+			directionsService.route({
+				origin: originPoint,
+				destination: destPoint,
+				waypoints: wayptsArray,
+				optimizeWaypoints:false,
+				avoidTolls: true,
+				avoidHighways: false,
+				travelMode: google.maps.TravelMode.WALKING
+			}, function (response, status) {
+				if (status == google.maps.DirectionsStatus.OK) {
+					//directionsDisplay.setOptions({ suppressMarkers: true, preserveViewport: true });
+					directionsDisplay.setDirections(response);							
+				} else {
+					window.alert('Directions request failed due to ' + status);
+				}
+			});
+				
+
+			new google.maps.Marker({
+				position: station1Point,
+				icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+				map: map,
+				title: "Station de vélo de départ"
+        	});
+
+			new google.maps.Marker({
+				position: station2Point,
+				icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+				map: map,
+				title: "Station de vélo d'arriver"
+        	});
+		}
+
+
+
+        </script>
+    <script
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&v=weekly"
+            defer
+    ></script>
+</body>
+</html>
