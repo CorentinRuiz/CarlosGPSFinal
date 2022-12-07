@@ -18,3 +18,5 @@ Pour lancer le client :
 
 Help :
 - MSBuild se retrouve dans "C:\Program Files\Microsoft Visual Studio\2022\Community\Msbuild\Current\Bin"
+- L'affichage de la map sur le client peut parfois buguer car nous avons utliser un moyen détourner pour la faire fonctionner sous javaFx
+- Il suffit de relancer le client pour quelle fonctionne à nouveaux
