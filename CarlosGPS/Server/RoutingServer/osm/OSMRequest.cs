@@ -50,7 +50,12 @@ namespace RoutingServer
                 "&key=" + _apiKey)
                 .Result;
 
-            return JObject.Parse(json)["hits"].First().ToString();
+            // Check if address exists
+            JToken parse = JObject.Parse(json)["hits"];;       
+            if (!parse.HasValues)
+                return null;
+
+            return parse.First().ToString();
         }
 
         private async Task<String> GetRequest(string url)

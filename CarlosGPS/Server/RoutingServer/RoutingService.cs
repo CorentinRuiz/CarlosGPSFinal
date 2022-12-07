@@ -17,8 +17,15 @@ namespace RoutingServer
         {
             // Retrieves the addresses given in user input and transforms them into an object
             OSMRequest osmRequest = new OSMRequest();
-            Address originAddress = JsonSerializer.Deserialize<Address>(osmRequest.GetAddressDetails(origin));
-            Address destinationAddress = JsonSerializer.Deserialize<Address>(osmRequest.GetAddressDetails(destination));
+            string addressDetailsOrigin = osmRequest.GetAddressDetails(origin);
+            string addressDetailsDest = osmRequest.GetAddressDetails(destination);
+
+            // If one of the address doesn't exist, return null
+            if (addressDetailsOrigin == null || addressDetailsDest == null)
+                return null;
+
+            Address originAddress = JsonSerializer.Deserialize<Address>(addressDetailsOrigin);
+            Address destinationAddress = JsonSerializer.Deserialize<Address>(addressDetailsDest);
 
             // Retrieves the list of all stations
             ProxyCacheServiceClient client = new ProxyCacheServiceClient();
@@ -28,10 +35,6 @@ namespace RoutingServer
             ItineraryHelper helper = new ItineraryHelper();
             var closestStationOrigin = helper.GetClosestStation(originAddress, allStations, true);
             var closestStationDest = helper.GetClosestStation(destinationAddress, allStations, false);
-
-            // If no station is in the origin or destination city, an error is thrown for the user.
-            if (closestStationOrigin == null || closestStationDest == null)
-                return null;
 
             // Calculates the best route between the point of origin, station 1, station 2, arrival.
             List<Itinerary> itineraries = new List<Itinerary>();

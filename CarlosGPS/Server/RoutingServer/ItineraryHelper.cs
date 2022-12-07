@@ -26,10 +26,6 @@ namespace RoutingServer
                 }
             }
 
-            // If no station is available within 3km, an error is returned to the user (no station in his city).
-            if (minDistance > 3.0)
-                return null;
-
             return closestStation;
         }
 
