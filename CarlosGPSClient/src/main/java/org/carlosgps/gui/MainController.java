@@ -85,7 +85,7 @@ public class MainController implements Initializable {
         itineraryRequesterService.setBestItinerary(originAddress,destAddress);
 
         if(itineraryRequesterService.getBestItinerary() == null){
-            launchErrorWindow("Aucune station de vélo n'a été trouvé sur votre trajet (Aucune station < 3km de votre point de départ)");
+            launchErrorWindow("Une ou plusieurs adresses n'ont pas été reconnues");
             return;
         }
 
